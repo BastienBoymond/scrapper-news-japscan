@@ -28,6 +28,8 @@ class Scrapper:
             list = []
             if soup:
                 chapters = soup.find('div', id="chapters_list");
+                if not chapters:
+                    continue
                 chapters_list = chapters.find_all('a', class_="text-dark")
                 nbchapter = len(chapters_list)
                 for chapter in chapters_list:
