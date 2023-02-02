@@ -1,14 +1,13 @@
 class Scrapper:
-    def __init__(self, db, baseURL, bypassCloudflare):
+    def __init__(self, db, baseURL):
         self.db = db
         self.baseURL = baseURL
-        self.bypassCloudflare = bypassCloudflare
 
     def return_soup(self, url):
         import requests
         from bs4 import BeautifulSoup
         try:
-            r = requests.post(self.bypassCloudflare, json={"url": url, "cmd":"request.get"}, headers={"Content-Type": "application/json"})
+            r = requests.get(url)
             if r.status_code == 200:
                 json = r.json()
                 soup = BeautifulSoup(json['solution']['response'], 'html.parser')

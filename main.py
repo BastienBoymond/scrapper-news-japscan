@@ -4,8 +4,8 @@ from scrapper import Scrapper
 db = Supabase()
 
 baseURL = "https://www.japscan.me/"
-bypassCloudflare = "http://localhost:8191/v1"
+# bypassCloudflare = "http://localhost:8191/v1"
 
-scrapper = Scrapper(db, baseURL, bypassCloudflare)
+scrapper = Scrapper(db, baseURL)
 
 scrapper.scrap()
