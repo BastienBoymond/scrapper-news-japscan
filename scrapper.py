@@ -9,13 +9,21 @@ class Scrapper:
         try:
             r = requests.get(url)
             if r.status_code == 200:
-                json = r.json()
-                soup = BeautifulSoup(json['solution']['response'], 'html.parser')
+                soup = BeautifulSoup(r.text, 'html.parser')
                 return soup
             else :
                 return None
         except:
             return None
+
+    def find_things(self, soup, tag, text, need_split = False):
+        things = soup.find_all(tag)
+        for thing in things:
+            if text in thing.text:
+                if need_split:
+                    return thing.text.replace(text, '').strip().split(',')
+                else:
+                    return thing.text.replace(text, '')
 
     def scrap(self):
         content = self.db.get('mangas-names')
@@ -23,25 +31,31 @@ class Scrapper:
             print(manga)
             url = self.baseURL + 'manga/' + manga['name'] + "/"
             soup = self.return_soup(url)
-            # print(soup)
             list = []
-            if soup:
-                chapters = soup.find('div', id="chapters_list");
-                if not chapters:
-                    continue
-                chapters_list = chapters.find_all('a', class_="text-dark")
-                nbchapter = len(chapters_list)
-                for chapter in chapters_list:
-                    chapter_url = chapter['href']
-                    chapter_name = chapter.text.strip()
-                    print(chapter_url.split('/')[-2], chapter_name)
-                    list.append({'name': chapter_name, 'chapter': chapter_url.split('/')[-2]})
-                list.reverse()
-                exist = self.db.check_exist_string('japscan-chapter', 'manga_name', manga['name'])
-                if exist:
-                    self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter})
-                else:
-                    self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter})
+            if not soup:
+                continue
+            chapters = soup.find('div', id="chapters_list");
+            if not chapters:
+                continue
+            genres = self.find_things(soup, 'p', 'Genre(s):', True)
+            types = self.find_things(soup, 'p', 'Type(s):', False)
+            author = self.find_things(soup, 'p', 'Auteur(s):', False)
+            artist = self.find_things(soup, 'p', 'Artiste(s):', False)
+            realease = self.find_things(soup, 'p', 'Date Sortie:', False)
+            print(genres)
+            chapters_list = chapters.find_all('a', class_="text-dark")
+            nbchapter = len(chapters_list)
+            for chapter in chapters_list:
+                chapter_url = chapter['href']
+                chapter_name = chapter.text.strip()
+                print(chapter_url.split('/')[-2], chapter_name)
+                list.append({'name': chapter_name, 'chapter': chapter_url.split('/')[-2]})
+            list.reverse()
+            exist = self.db.check_exist_string('japscan-chapter', 'manga_name', manga['name'])
+            if exist:
+                self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease})
+            else:
+                self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease})
 
         print(content)
         pass;
