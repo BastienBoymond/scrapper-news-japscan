@@ -23,7 +23,7 @@ class Scrapper:
                 if need_split:
                     return thing.text.replace(text, '').strip().split(',')
                 else:
-                    return thing.text.replace(text, '')
+                    return thing.text.replace(text, '').strip()
 
     def scrap(self):
         content = self.db.get('mangas-names')
