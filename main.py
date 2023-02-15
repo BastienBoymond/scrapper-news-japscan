@@ -3,7 +3,7 @@ from scrapper import Scrapper
 
 db = Supabase()
 
-baseURL = "https://www.japscan.me/"
+baseURL = "https://www.japscan.lol/"
 
 scrapper = Scrapper(db, baseURL)
 
