@@ -28,7 +28,6 @@ class Scrapper:
     def scrap(self):
         content = self.db.get('mangas-names')
         for manga in content:
-            print(manga)
             url = self.baseURL + 'manga/' + manga['name'] + "/"
             soup = self.return_soup(url)
             list = []
@@ -42,13 +41,16 @@ class Scrapper:
             author = self.find_things(soup, 'p', 'Auteur(s):', False)
             artist = self.find_things(soup, 'p', 'Artiste(s):', False)
             realease = self.find_things(soup, 'p', 'Date Sortie:', False)
-            synopsis = soup.find('p', class_="list-group-item").text
+            synopsis = soup.find('p', class_="list-group-item")
+            if synopsis:
+                synopsis = synopsis.text.strip()
+            else:
+                synopsis = ''
             chapters_list = chapters.find_all('a', class_="text-dark")
             nbchapter = len(chapters_list)
             for chapter in chapters_list:
                 chapter_url = chapter['href']
                 chapter_name = chapter.text.strip()
-                # print(chapter_url.split('/')[-2], chapter_name)
                 list.append({'name': chapter_name, 'chapter': chapter_url.split('/')[-2]})
             list.reverse()
             exist = self.db.check_exist_string('japscan-chapter', 'manga_name', manga['name'])
@@ -56,6 +58,4 @@ class Scrapper:
                 self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'synopsis': synopsis})
             else:
                 self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'synopsis': synopsis})
-
-        print(content)
-        pass;
+        return;

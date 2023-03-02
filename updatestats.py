@@ -9,6 +9,8 @@ class Stats:
             genres_read = []
             for manga in content:
                 if manga['manga_name'] in user['mangalist']:
+                    if manga['genres'] == None:
+                        continue
                     for genre in manga['genres']:
                         genre_exist = False
                         if genres_read == []:
@@ -21,5 +23,5 @@ class Stats:
                         if not genre_exist:
                             genres_read.append({'genre': genre, 'nb': 1})
             self.db.update('stats', "id" ,user['id'], {'genres_read': genres_read})
-
+        return;
 # [{genre: Action, nb:1}, {genre: Romance, nb:1}]
