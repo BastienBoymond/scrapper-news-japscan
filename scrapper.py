@@ -21,7 +21,7 @@ class Scrapper:
         for thing in things:
             if text in thing.text:
                 if need_split:
-                    return thing.text.replace(text, '').strip().split(',')
+                    return thing.text.replace(text, '').strip().replace('\t', '').split(',')
                 else:
                     return thing.text.replace(text, '').strip()
 
@@ -41,8 +41,8 @@ class Scrapper:
             types = self.find_things(soup, 'p', 'Type(s):', False)
             author = self.find_things(soup, 'p', 'Auteur(s):', False)
             artist = self.find_things(soup, 'p', 'Artiste(s):', False)
+            names = self.find_things(soup, 'p', 'Nom(s) Alternatif(s):', True)
             realease = self.find_things(soup, 'p', 'Date Sortie:', False)
-            print(genres)
             chapters_list = chapters.find_all('a', class_="text-dark")
             nbchapter = len(chapters_list)
             for chapter in chapters_list:
@@ -53,9 +53,9 @@ class Scrapper:
             list.reverse()
             exist = self.db.check_exist_string('japscan-chapter', 'manga_name', manga['name'])
             if exist:
-                self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease})
+                self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'alternative_name': names})
             else:
-                self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease})
+                self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'alternative_name': names})
 
         print(content)
         pass;
