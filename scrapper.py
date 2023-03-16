@@ -1,6 +1,6 @@
 class Scrapper:
-    def __init__(self, db, baseURL):
-        self.db = db
+    def __init__(self, postgres, baseURL):
+        self.postgres = postgres
         self.baseURL = baseURL
 
     def return_soup(self, url):
@@ -26,11 +26,11 @@ class Scrapper:
                     return thing.text.replace(text, '').strip()
     
     def scrap(self):
-        content = self.db.get('mangas-names')
+        content = self.postgres.get('mangas_names')
         for manga in content:
-            url = self.baseURL + 'manga/' + manga['name'] + "/"
+            url = self.baseURL + 'manga/' + manga[1] + "/"
             soup = self.return_soup(url)
-            list = []
+            listChap = []
             if not soup:
                 continue
             chapters = soup.find('div', id="chapters_list");
@@ -52,13 +52,12 @@ class Scrapper:
             for chapter in chapters_list:
                 chapter_url = chapter['href']
                 chapter_name = chapter.text.strip()
-                list.append({'name': chapter_name, 'chapter': chapter_url.split('/')[-2]})
-            list.reverse()
-            exist = self.db.check_exist_string('japscan-chapter', 'manga_name', manga['name'])
+                listChap.append({'name': chapter_name, 'chapter': chapter_url.split('/')[-2]})
+            listChap.reverse()
+            import json
+            exist = self.postgres.check_if_exist_string('japscan_chapter', 'manga_name', manga[1])
             if exist:
-                self.db.update_str('japscan-chapter', 'manga_name', manga['name'], {'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'alternative_name': names, 'synopsis': synopsis})
+                self.postgres.update_str('japscan_chapter', 'manga_name', manga[1], "(chapitre_list, nb_chapitre, genres, type, author, artist, release_date, alternative_name, synopsis)", (json.dumps(listChap), nbchapter, json.dumps(genres), types, author, artist, realease, json.dumps(names), synopsis), "(%s, %s, %s, %s, %s, %s, %s, %s, %s)")
             else:
-                self.db.insert('japscan-chapter', {'manga_name': manga['name'], 'chapitre_list': list, 'nb_chapitre': nbchapter, 'genres': genres, 'type': types, 'author': author, 'artist': artist, 'release-date': realease, 'alternative_name': names, 'synopsis': synopsis})
-
-        print(content)
-        pass;
+                self.postgres.insert('japscan_chapter', "(manga_name, chapitre_list, nb_chapitre, genres, type, author, artist, release_date, alternative_name, synopsis)", (manga['name'], json.dumps(listChap), nbchapter, json.dumps(genres), types, author, artist, realease, json.dumps(names), synopsis), "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+        return;

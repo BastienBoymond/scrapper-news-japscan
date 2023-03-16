@@ -1,0 +1,85 @@
+<japscan-chapter> = 
+    <manga_name> = {
+        type = text
+        rows = 0
+    }
+    <chapter_list> = {
+        type = jsonb
+        rows = 1
+    }
+    <nb_chapitre> = {
+        type = number
+        rows = 2
+    }
+    <type> = {
+        type = text
+        rows = 3
+    }
+    <artist> = {
+        type = text
+        rows = 4
+    }
+    <author> = {
+        type = text
+        rows = 5
+    }
+    <release_date> = {
+        type = number
+        rows = 6
+    }
+    <synopsis> = {
+        type = text
+        rows = 7
+    }
+    <alternative_name> = {
+        type = jsonb
+        rows = 8
+    }
+    <id> = {
+        type = number
+        rows = 9
+    }
+    <genres> = {
+        type = jsonb
+        rows = 10
+    }
+
+<manga_names> = 
+    <id> = {
+        type = number
+        rows = 0
+    }
+    <name> = {
+        type = text
+        rows = 1
+    }
+    <created_at> = {
+        type = timestamp
+        rows = 2
+    }
+
+<stats> = 
+    <id> = {
+        type = number
+        rows = 0
+    }
+    <page_read> = {
+        type = number
+        rows = 1
+    }
+    <chapter_read> = {
+        type = number
+        rows = 2
+    }
+    <genre_read> = {
+        type = jsonb
+        rows = 3
+    }
+    <history> = {
+        type = jsonb
+        rows = 4
+    }
+    <mangalist> = {
+        type = jsonb
+        rows = 5
+    }
