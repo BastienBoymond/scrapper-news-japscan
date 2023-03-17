@@ -59,6 +59,5 @@ class Scrapper:
             if exist:
                 self.postgres.update_str('japscan_chapter', 'manga_name', manga[1], "(chapitre_list, nb_chapitre, genres, type, author, artist, release_date, alternative_name, synopsis)", (json.dumps(listChap), nbchapter, json.dumps(genres), types, author, artist, realease, json.dumps(names), synopsis), "(%s, %s, %s, %s, %s, %s, %s, %s, %s)")
             else:
-                print(manga[1], nbchapter, types, author, artist, realease, synopsis)
                 self.postgres.insert('japscan_chapter', "(manga_name, chapitre_list, nb_chapitre, genres, type, author, artist, release_date, alternative_name, synopsis)", (manga[1], json.dumps(listChap), nbchapter, json.dumps(genres), types, author, artist, realease, json.dumps(names), synopsis), "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
         return;
