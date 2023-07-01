@@ -6,8 +6,9 @@ db = Supabase()
 postgres = Postgres()
 
 baseURL = "https://www.japscan.lol/"
+bypassCloudflare = "http://localhost:8191/v1"
 
-scrapper = Scrapper(postgres, baseURL)
+scrapper = Scrapper(postgres, baseURL, bypassCloudflare)
 stats = Stats(db, postgres)
 
 scrapper.scrap()
