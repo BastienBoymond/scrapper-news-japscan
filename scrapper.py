@@ -3,8 +3,9 @@ class Scrapper:
         self.postgres = postgres
         self.baseURL = baseURL
         self.bypassCloudflare = bypassCloudflare
+        self.cloudflareActive = False
 
-    def return_soup(self, url):
+    def run_cloudflare_bypass(self, url):
         import requests
         from bs4 import BeautifulSoup
         try: 
@@ -13,10 +14,29 @@ class Scrapper:
                 json = r.json()
                 soup = BeautifulSoup(json['solution']['response'], 'html.parser')
                 return soup
-            else :
+            else:
                 return None
         except:
             return None
+
+    def return_soup(self, url):
+        import requests
+        from bs4 import BeautifulSoup
+        if not self.cloudflareActive:
+            try:
+                r = requests.get(url);
+                if r.status_code == 200:
+                    soup = BeautifulSoup(r.text, 'html.parser')
+                    return soup
+                else :
+                    self.cloudflareActive = True
+                    return  self.run_cloudflare_bypass(url)
+            except:
+                self.cloudflareActive = True
+                return  self.run_cloudflare_bypass(url)
+                
+        else:
+            return self.run_cloudflare_bypass(url)
 
     def find_things(self, soup, tag, text, need_split = False):
         things = soup.find_all(tag)
@@ -36,6 +56,7 @@ class Scrapper:
             if not soup:
                 continue
             chapters = soup.find('div', id="chapters_list");
+            print(chapters)
             if not chapters:
                 continue
             genres = self.find_things(soup, 'p', 'Genre(s):', True)
