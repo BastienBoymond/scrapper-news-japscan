@@ -2,7 +2,6 @@ class Scrapper:
     def __init__(self, postgres, baseURL):
         self.postgres = postgres
         self.baseURL = baseURL
-        self.cloudflareActive = False
 
 
     def return_soup(self, url):
